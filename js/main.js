@@ -9,7 +9,6 @@ require.config({
   ],
 });
 
-console.log("OK");
 require(['physicsjs',
          'physicsjs/renderers/canvas',
          'physicsjs/bodies/circle',
