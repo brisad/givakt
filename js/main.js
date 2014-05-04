@@ -9,8 +9,8 @@ require.config({
   ],
 });
 
-var worldWidth = 500;
-var worldHeight = 500;
+var worldWidth = window.innerWidth;
+var worldHeight = window.innerHeight;
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -69,14 +69,27 @@ require(['require',
 
       var bounds = Physics.aabb(0, 0, worldWidth, worldHeight);
 
-      world.add(Physics.behavior('edge-collision-detection', {
+      var edgeBounce = Physics.behavior('edge-collision-detection', {
         aabb: bounds,
         restitution: 1,
         cof: 0
-      }));
+      });
+
+      world.add(edgeBounce);
       world.add(Physics.behavior('body-impulse-response'));
       world.add(Physics.behavior('body-collision-detection'));
       world.add(Physics.behavior('sweep-prune'));
+
+      window.addEventListener('resize', function () {
+        var borderWidth = parseInt($('#viewport').css('border-left-width'));
+        worldWidth = window.innerWidth - borderWidth * 2;
+        worldHeight = window.innerHeight - borderWidth * 2;
+        renderer.el.width = worldWidth;
+        renderer.el.height = worldHeight;
+        bounds = Physics.aabb(0, 0, worldWidth, worldHeight);
+        edgeBounce.setAABB(bounds);
+      }, true);
+
     });
   }
 
