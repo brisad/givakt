@@ -9,8 +9,10 @@ require.config({
   ],
 });
 
-var worldWidth = window.innerWidth;
-var worldHeight = window.innerHeight;
+var borderWidth = parseInt($('#viewport').css('border-left-width'));
+var worldWidth = window.innerWidth - borderWidth * 2;
+var worldHeight = window.innerHeight - borderWidth * 2;
+var ionRadius = Math.max(worldWidth, worldHeight) / 20;
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -30,13 +32,12 @@ require(['require',
     Physics(function (world) {
 
       var addIon = function () {
-        var radius = 30;
         var ion = Physics.body('circle', {
-          x: getRandomInt(radius, worldWidth - radius),
-          y: getRandomInt(radius, worldHeight - radius),
+          x: getRandomInt(ionRadius, worldWidth - ionRadius),
+          y: getRandomInt(ionRadius, worldHeight - ionRadius),
           vx: 0.4,
           vy: 0.2,
-          radius: 30,
+          radius: ionRadius,
           restitution: 1,
         });
 
@@ -45,17 +46,46 @@ require(['require',
         world.add(ion);
       };
 
+      var addUnknownIon = function () {
+        var radius = getRandomInt(ionRadius - 10, ionRadius + 10);
+        var c = getRandomInt(100, 200);
+        var color = 'rgb(' + c + ',' + c + ',' + c + ')';
+        var ion = Physics.body('circle', {
+          x: getRandomInt(radius, worldWidth - radius),
+          y: getRandomInt(radius, worldHeight - radius),
+          vx: 0.4,
+          vy: 0.2,
+          radius: radius,
+          restitution: 1,
+          styles: {
+            fillStyle: color,
+            angleIndicator: color
+          }
+        });
+        world.add(ion);
+      };
+
       var renderer = Physics.renderer('canvas', {
         el: 'viewport',
         width: worldWidth,
-        height: worldHeight
+        height: worldHeight,
+
+        styles: {
+          'circle': {
+            strokeStyle: 'rgb(0, 30, 0)',
+            lineWidth: 4,
+            fillStyle: 'rgb(200, 200, 200)',
+            angleIndicator: false
+          }
+        }
       });
       world.add(renderer);
 
       addIon();
       addIon();
-      addIon();
-      addIon();
+      for (var i = 0; i < 12; i++) {
+        addUnknownIon();
+      }
 
       Physics.util.ticker.on(function (time, dt) {
         world.step(time);
@@ -107,5 +137,5 @@ require(['require',
   };
 
   // Load the free ion image and create the world when finished
-  loadImage('img/freeion1.png', 100, 70, createWorld);
+  loadImage('img/freeion1.png', ionRadius*3.33, ionRadius*2.33, createWorld);
 });
