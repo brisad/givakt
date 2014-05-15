@@ -65,6 +65,10 @@ canvas {
     border: 4px solid;
 }
 
+canvas.title {
+    background: url(../img/givakt1.png) 0 0 / contain no-repeat;
+}
+
 #controls {
     margin-left: auto;
     margin-right: 0px;

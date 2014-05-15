@@ -84,15 +84,26 @@ require(['require',
         }
       }
 
+      var setTitleBackground = function (alternative) {
+        if (alternative == 1) {
+          $('canvas').addClass('title');
+        } else {
+          $('canvas').removeClass('title');
+        }
+      }
+
+      setTitleBackground(parseInt($('#alternative').val()));
       addIonsToWorld(parseInt($('#alternative').val()));
 
       var self = this;
       $('#alternative').on('change', function () {
+        var alternative = parseInt($(this).val());
+        setTitleBackground(alternative);
         // Remove all ions
         self.remove(ions);
         ions.length = 0;
         // Add new ions
-        addIonsToWorld(parseInt($(this).val()));
+        addIonsToWorld(alternative);
       });
 
       var renderer = Physics.renderer('canvas', {
