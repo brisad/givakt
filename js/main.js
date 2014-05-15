@@ -93,7 +93,7 @@ require(['require',
         ions.length = 0;
         // Add new ions
         addIonsToWorld(parseInt($(this).val()));
-      }.bind(this));
+      });
 
       var renderer = Physics.renderer('canvas', {
         el: 'viewport',
