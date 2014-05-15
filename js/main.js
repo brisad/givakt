@@ -39,7 +39,7 @@ require(['require',
 
       var makeIon = function (options) {
         var energy = energyPerIon;
-        var direction = getRandomInt(0, 2 * Math.PI);
+        var direction = Math.random() * Math.PI;
         return Physics.body(
           'circle',
           $.extend({
