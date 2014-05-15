@@ -77,7 +77,7 @@ require(['require',
         addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
         addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
 
-        if (alternative == 2) {
+        if (alternative > 1) {
           for (var i = 0; i < 12; i++) {
             addUnknownIon();
           }
@@ -85,7 +85,7 @@ require(['require',
       }
 
       var setTitleBackground = function (alternative) {
-        if (alternative == 1) {
+        if (alternative == 3) {
           $('canvas').addClass('title');
         } else {
           $('canvas').removeClass('title');
