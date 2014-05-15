@@ -9,9 +9,6 @@ require.config({
   ],
 });
 
-var variant = parseInt($('#variant').val());
-$('#variant').on('change', function () { variant = parseInt($(this).val()); });
-
 var alternative = parseInt($('#alternative').val());
 
 var energyPerIon = 0.5;
@@ -116,28 +113,13 @@ require(['require',
           return prev + curr.state.vel.norm();
         }, 0);
 
-        if (variant == 1) {
+        var diff = targetEnergy - currentEnergy;
+        if (diff > 0) {
           ions.forEach(function (ion) {
-            ion.state.vel.normalize().mult(energyPerIon);
+            var length = ion.state.vel.norm();
+            ion.state.vel.vadd(ion.state.vel.clone().normalize().mult(
+              length / currentEnergy * diff));
           });
-        }
-        else if (variant == 2) {
-          var f = (targetEnergy - currentEnergy) / ions.length;
-          if (f > 0) {
-            ions.forEach(function (ion) {
-              ion.state.vel.vadd(ion.state.vel.clone().normalize().mult(f))
-            });
-          }
-        }
-        else {
-          var diff = targetEnergy - currentEnergy;
-          if (diff > 0) {
-            ions.forEach(function (ion) {
-              var length = ion.state.vel.norm();
-              ion.state.vel.vadd(ion.state.vel.clone().normalize().mult(
-                length / currentEnergy * diff));
-            });
-          }
         }
 
         world.render();
