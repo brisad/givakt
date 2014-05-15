@@ -9,10 +9,7 @@ require.config({
   ],
 });
 
-var alternative = parseInt($('#alternative').val());
-
 var energyPerIon = 0.5;
-
 var controlsWidth = 200;
 $('#controls').css('width', controlsWidth);
 
@@ -76,6 +73,28 @@ require(['require',
         world.add(ion);
       };
 
+      var addIonsToWorld = function (alternative) {
+        addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
+        addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
+
+        if (alternative == 2) {
+          for (var i = 0; i < 12; i++) {
+            addUnknownIon();
+          }
+        }
+      }
+
+      addIonsToWorld(parseInt($('#alternative').val()));
+
+      var self = this;
+      $('#alternative').on('change', function () {
+        // Remove all ions
+        self.remove(ions);
+        ions.length = 0;
+        // Add new ions
+        addIonsToWorld(parseInt($(this).val()));
+      }.bind(this));
+
       var renderer = Physics.renderer('canvas', {
         el: 'viewport',
         width: worldWidth,
@@ -91,15 +110,6 @@ require(['require',
         }
       });
       world.add(renderer);
-
-      addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
-      addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
-
-      if (alternative == 2) {
-        for (var i = 0; i < 12; i++) {
-          addUnknownIon();
-        }
-      }
 
       Physics.util.ticker.on(function (time, dt) {
         world.step(time);
