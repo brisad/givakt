@@ -74,10 +74,14 @@ require(['require',
       };
 
       var addIonsToWorld = function (alternative) {
-        addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
-        addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
+        if (alternative < 3) {
+          addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
+          addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
+        } else {
+          addFreeIon();
+        }
 
-        if (alternative > 1) {
+        if (alternative == 2) {
           for (var i = 0; i < 12; i++) {
             addUnknownIon();
           }
