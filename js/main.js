@@ -9,8 +9,18 @@ require.config({
   ],
 });
 
+var variant = parseInt($('#variant').val());
+$('#variant').on('change', function () { variant = parseInt($(this).val()); });
+
+var alternative = parseInt($('#alternative').val());
+
+var energyPerIon = 0.5;
+
+var controlsWidth = 200;
+$('#controls').css('width', controlsWidth);
+
 var borderWidth = parseInt($('#viewport').css('border-left-width'));
-var worldWidth = window.innerWidth - borderWidth * 2;
+var worldWidth = window.innerWidth - borderWidth * 2 - controlsWidth;
 var worldHeight = window.innerHeight - borderWidth * 2;
 var ionRadius = Math.max(worldWidth, worldHeight) / 20;
 
@@ -31,37 +41,41 @@ require(['require',
 
     Physics(function (world) {
 
-      var addIon = function () {
-        var ion = Physics.body('circle', {
-          x: getRandomInt(ionRadius, worldWidth - ionRadius),
-          y: getRandomInt(ionRadius, worldHeight - ionRadius),
-          vx: 0.4,
-          vy: 0.2,
-          radius: ionRadius,
-          restitution: 1,
-        });
+      var ions = [];
 
+      var makeIon = function (options) {
+        var energy = energyPerIon;
+        var direction = getRandomInt(0, 2 * Math.PI);
+        return Physics.body(
+          'circle',
+          $.extend({
+            x: getRandomInt(ionRadius, worldWidth - ionRadius),
+            y: getRandomInt(ionRadius, worldHeight - ionRadius),
+            vx: energy * Math.cos(direction),
+            vy: energy * Math.sin(direction),
+            radius: ionRadius,
+            restitution: 1,
+          }, options));
+      };
+
+      var addFreeIon = function (options) {
+        var ion = makeIon(options);
         ion.view = new Image();
         ion.view.src = freeIonImg;
+        ions.push(ion);
         world.add(ion);
       };
 
       var addUnknownIon = function () {
-        var radius = getRandomInt(ionRadius - 10, ionRadius + 10);
+        var radius = getRandomInt(ionRadius - 20, ionRadius + 10);
         var c = getRandomInt(100, 200);
         var color = 'rgb(' + c + ',' + c + ',' + c + ')';
-        var ion = Physics.body('circle', {
-          x: getRandomInt(radius, worldWidth - radius),
-          y: getRandomInt(radius, worldHeight - radius),
-          vx: 0.4,
-          vy: 0.2,
-          radius: radius,
-          restitution: 1,
-          styles: {
-            fillStyle: color,
-            angleIndicator: color
-          }
-        });
+        var ion = makeIon({radius: radius,
+                           styles: {
+                             fillStyle: color,
+                             angleIndicator: color
+                           }});
+        ions.push(ion);
         world.add(ion);
       };
 
@@ -81,10 +95,13 @@ require(['require',
       });
       world.add(renderer);
 
-      addIon();
-      addIon();
-      for (var i = 0; i < 12; i++) {
-        addUnknownIon();
+      addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
+      addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
+
+      if (alternative == 2) {
+        for (var i = 0; i < 12; i++) {
+          addUnknownIon();
+        }
       }
 
       Physics.util.ticker.on(function (time, dt) {
@@ -94,6 +111,35 @@ require(['require',
       Physics.util.ticker.start();
 
       world.on('step', function () {
+        var targetEnergy = energyPerIon * ions.length;
+        var currentEnergy = ions.reduce(function (prev, curr) {
+          return prev + curr.state.vel.norm();
+        }, 0);
+
+        if (variant == 1) {
+          ions.forEach(function (ion) {
+            ion.state.vel.normalize().mult(energyPerIon);
+          });
+        }
+        else if (variant == 2) {
+          var f = (targetEnergy - currentEnergy) / ions.length;
+          if (f > 0) {
+            ions.forEach(function (ion) {
+              ion.state.vel.vadd(ion.state.vel.clone().normalize().mult(f))
+            });
+          }
+        }
+        else {
+          var diff = targetEnergy - currentEnergy;
+          if (diff > 0) {
+            ions.forEach(function (ion) {
+              var length = ion.state.vel.norm();
+              ion.state.vel.vadd(ion.state.vel.clone().normalize().mult(
+                length / currentEnergy * diff));
+            });
+          }
+        }
+
         world.render();
       });
 
@@ -112,7 +158,7 @@ require(['require',
 
       window.addEventListener('resize', function () {
         var borderWidth = parseInt($('#viewport').css('border-left-width'));
-        worldWidth = window.innerWidth - borderWidth * 2;
+        worldWidth = window.innerWidth - borderWidth * 2 - controlsWidth;
         worldHeight = window.innerHeight - borderWidth * 2;
         renderer.el.width = worldWidth;
         renderer.el.height = worldHeight;

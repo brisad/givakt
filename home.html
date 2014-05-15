@@ -20,7 +20,23 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <canvas id="viewport" width="500" height="500"></canvas>
+        <canvas id="viewport" width="0" height="0"></canvas>
+        <div id="controls">
+          &nbsp;
+          <label for="variant">Dynamics</label>
+          <select id="variant">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+          <br/>
+          &nbsp;
+          <label for="alternative">Alternative</label>
+          <select id="alternative">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+          </select>
+        </div>
 
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
