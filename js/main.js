@@ -10,7 +10,7 @@ require.config({
 });
 
 var energyPerIon = 0.5;
-var controlsWidth = 200;
+var controlsWidth = 100;
 $('#controls').css('width', controlsWidth);
 
 var borderWidth = parseInt($('#viewport').css('border-left-width'));
