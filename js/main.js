@@ -81,7 +81,7 @@ require(['require',
           addFreeIon();
         }
 
-        if (alternative == 2) {
+        if (alternative > 1) {
           for (var i = 0; i < 12; i++) {
             addUnknownIon();
           }
