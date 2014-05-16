@@ -38,8 +38,8 @@ require(['require',
       var ions = [];
 
       var makeIon = function (options) {
-        var energy = energyPerIon;
-        var direction = Math.random() * Math.PI;
+        var energy = options && options.energy || energyPerIon;
+        var direction = options && options.direction || Math.random() * Math.PI;
         return Physics.body(
           'circle',
           $.extend({
@@ -75,8 +75,14 @@ require(['require',
 
       var addIonsToWorld = function (alternative) {
         if (alternative < 3) {
-          addFreeIon({x: ionRadius, y: worldHeight - ionRadius});
-          addFreeIon({x: worldWidth - ionRadius, y: ionRadius});
+          addFreeIon({x: ionRadius,
+                      y: worldHeight - ionRadius,
+                     direction: Math.atan2(worldHeight, worldWidth),
+                     energy: 0.4});
+          addFreeIon({x: worldWidth - ionRadius,
+                      y: ionRadius,
+                     direction: Math.atan2(-worldHeight, -worldWidth),
+                     energy: 0.6});
         } else {
           addFreeIon();
         }
